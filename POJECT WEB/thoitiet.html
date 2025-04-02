@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dự Báo Thời Tiết</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+      background-image: url('image/taixuong.jpg'); /* Consider using a relative path */
+      background-size: cover; /* Cover the entire background */
+      background-position: center; /* Center the background image */
+      color: rgb(237, 229, 229); /* White text for better readability */
+    }
+    input, button {
+      margin: 10px;
+      padding: 10px;
+      background-color: rgb(243, 238, 238); /* Semi-transparent background for input and button */
+      border: none;
+      border-radius: 5px;
+    }
+    .weather-info {
+      margin-top: 20px;
+      text-align: center; /* Center all weather information */
+    }
+    .weather-icon {
+      margin-right: 10px;
+      vertical-align: middle;
+      color: #007BFF; /* Blue color for weather icons */
+      font-size: 1.5em; 
+    }
+  </style>
+</head>
+<body>
+  <h1>Dự Báo Thời Tiết</h1>
+  <input type="text" id="city" placeholder="Nhập tên thành phố" />
+  <button onclick="getWeather()">Xem dự báo</button>
+
+  <div class="weather-info" id="weatherInfo"></div>
+
+  <script>
+    async function getWeather() {
+      const city = document.getElementById('city').value;
+      const apiKey = '3b08e2c2e47de07a1529e562e79d3337';
+      const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`;
+      
+      try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("Không tìm thấy thông tin cho thành phố này.");
+        
+        const data = await response.json();
+        const temperature = data.main.temp;
+        let weatherDescription;
+
+        // Logic to determine weather description based on temperature
+        if (temperature >= 28) {
+          weatherDescription = "Thời tiết tệ với mức nhiệt độ cao.";
+        } else if (temperature >= 20 && temperature < 28) {
+          weatherDescription = "Thời tiết tốt.";
+        } else {
+          weatherDescription = "Thời tiết mây giông và nhiệt độ thấp.";
+        }
+
+        const weatherInfo = `
+          <h2>Thời tiết tại ${data.name}</h2>
+          <p><i class="fas fa-thermometer-half weather-icon"></i>Nhiệt độ: ${temperature}°C</p>
+          <p><i class="fas fa-cloud weather-icon"></i>${weatherDescription}</p>
+          <p><i class="fas fa-tint weather-icon"></i>Độ ẩm: ${data.main.humidity}%</p>
+          <p><i class="fas fa-wind weather-icon"></i>Tốc độ gió: ${data.wind.speed} m/s</p>
+        `;
+        document.getElementById('weatherInfo').innerHTML = weatherInfo;
+      } catch (error) {
+        document.getElementById('weatherInfo').innerHTML = `<p>${error.message}</p>`;
+      }
+    }
+  </script>
+</body>
+</html>
